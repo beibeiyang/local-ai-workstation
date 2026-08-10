@@ -21,22 +21,22 @@
 
 ```mermaid
 flowchart TB
-    mac["💻 MacBook Pro<br/><small>primary development surface</small>"]
+    mac["💻 MacBook Pro"]
 
     subgraph win["🪟 Windows 11 — host OS"]
         direction TB
-        gpu["NVIDIA driver<br/><small>Studio Driver, installed once</small>"]
-        sshd["OpenSSH Server<br/><small>the only listener</small>"]
-        ollama["Ollama<br/><small>native Windows install<br/>OLLAMA_HOST=0.0.0.0:11434<br/>firewalled to Private + LocalSubnet</small>"]
+        gpu["NVIDIA Studio Driver"]
+        sshd["OpenSSH Server"]
+        ollama["Ollama · 0.0.0.0:11434"]
 
         subgraph wsl["🐧 WSL2 · Ubuntu 24.04 — where work happens"]
             direction TB
-            tmux["tmux<br/><small>persistent sessions</small>"]
+            tmux["tmux sessions"]
             agents["OpenCode / Hermes"]
-            repos["git repos<br/><small>~/src</small>"]
-            toolchain["toolchain<br/><small>Node 24 · Python 3.12<br/>uv · mise</small>"]
-            docker["Docker Desktop<br/><small>optional</small>"]
-            webui["Open WebUI<br/><small>127.0.0.1:3000</small>"]
+            repos["git repos · ~/src"]
+            toolchain["Node 24 · Python 3.12 · uv · mise"]
+            docker["Docker Desktop"]
+            webui["Open WebUI · 127.0.0.1:3000"]
         end
     end
 
@@ -154,12 +154,12 @@ flowchart LR
         m2["127.0.0.1:3000"]
     end
 
-    tunnel(["encrypted SSH tunnel<br/><small>port 22 — the only port<br/>reachable from off-LAN</small>"])
+    tunnel(["SSH tunnel · port 22"])
 
     subgraph winside["Windows / WSL2"]
         direction TB
-        w1["Ollama<br/><small>0.0.0.0:11434<br/>firewall: Private + LocalSubnet</small>"]
-        w2["Open WebUI<br/><small>127.0.0.1:3000<br/>loopback-bound</small>"]
+        w1["Ollama · 0.0.0.0:11434"]
+        w2["Open WebUI · 127.0.0.1:3000"]
     end
 
     lan["🌐 internet"]
@@ -168,7 +168,7 @@ flowchart LR
     m2 --> tunnel
     tunnel --> w1
     tunnel --> w2
-    lan -. "no route:<br/>nothing forwarded<br/>at the router" .-x winside
+    lan -. "no route in" .-x winside
 
     classDef safe fill:#f2fbf2,stroke:#4a8a5a,color:#111
     classDef blocked fill:#fdeeee,stroke:#b04a4a,color:#111
@@ -184,28 +184,28 @@ At home this works because the Mac and the workstation share a LAN, so `HostName
 
 The wrong fix is to forward port 22 on the home router — that publishes a permanent, internet-visible SSH listener attached to your home IP, to be found by the scanners that sweep the entire address space continuously. Do not do it.
 
-The right fix is [Tailscale](https://tailscale.com) on both machines. It's a WireGuard mesh VPN: each machine authenticates to your Tailscale account, gets a stable private address on your personal network (a *tailnet*), and the two peers negotiate a direct encrypted connection by punching out through both NATs — so **nothing is ever opened on the router**, and the workstation stays invisible to the public internet. To your SSH client, the workstation just looks like it's on the local network again, wherever you are.
+The right fix is [Tailscale](https://tailscale.com) on both machines. It's a WireGuard mesh VPN: each machine authenticates to your Tailscale account, gets a stable private address on your personal network (a *tailnet*), and the two peers negotiate a direct encrypted connection by punching out through both NATs — so **nothing is ever opened on the router**, and the workstation stays invisible to the public internet. Tailscale's coordination server is only a directory: it exchanges public keys and address candidates so the two machines can find each other, and your traffic goes peer-to-peer without passing through it. To your SSH client, the workstation just looks like it's on the local network again, wherever you are.
 
 ```mermaid
 flowchart LR
-    ts["☁️ Tailscale coordination server<br/><small>step 1 · both machines authenticate to your account,<br/>and are told each other's keys and public addresses.<br/>It never carries your traffic.</small>"]
+    ts["☁️ Tailscale coordination"]
 
     subgraph bnb["🏝️ Airbnb — untrusted Wi-Fi"]
-        mac["💻 MacBook Pro<br/><small>tailnet 100.x.y.z<br/>127.0.0.1:11434 · :3000</small>"]
+        mac["💻 MacBook Pro · 100.x.y.z"]
     end
 
     nat1["Airbnb NAT"]
-    nat2["home router<br/><small>no ports forwarded</small>"]
+    nat2["home router"]
 
     subgraph home["🏠 Home"]
-        win["🪟 Windows workstation<br/><small>tailnet 100.a.b.c<br/>sshd · Ollama · Open WebUI<br/>still nothing published to the internet</small>"]
+        win["🪟 Workstation · 100.a.b.c"]
     end
 
-    mac -. "registers + looks up peer" .-> ts
-    win -. "registers + looks up peer" .-> ts
-    mac ==> |"step 2 · direct WireGuard tunnel,<br/>punched out through both NATs"| nat1
+    mac -. "1 · find peer" .-> ts
+    win -. "1 · find peer" .-> ts
+    mac ==> |"2 · WireGuard tunnel"| nat1
     nat1 ==> nat2
-    nat2 ==> |"step 3 · ssh ai-dev rides inside it,<br/>with the same LocalForward tunnels"| win
+    nat2 ==> |"3 · ssh ai-dev inside it"| win
 
     classDef device fill:#eef4ff,stroke:#4a6fa5,color:#111
     classDef infra fill:#f5f2fa,stroke:#7a6a9a,color:#111

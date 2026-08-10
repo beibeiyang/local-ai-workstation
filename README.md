@@ -13,26 +13,26 @@ NVIDIA GPU machine.
 
 ```mermaid
 flowchart TB
-    mac["💻 MacBook Pro<br/><small>terminal + browser</small>"]
+    mac["💻 MacBook Pro"]
 
     subgraph win["🪟 Windows 11 host"]
         direction TB
         sshd["OpenSSH Server"]
-        gpu["NVIDIA driver<br/><small>Studio Driver</small>"]
-        ollama["Ollama<br/><small>0.0.0.0:11434, LAN-firewalled</small>"]
+        gpu["NVIDIA driver"]
+        ollama["Ollama · 11434"]
 
         subgraph wsl["🐧 WSL2 · Ubuntu 24.04"]
             direction TB
-            agents["OpenCode / Hermes<br/><small>coding agents</small>"]
-            repos["git repos<br/><small>~/src</small>"]
-            webui["Docker → Open WebUI<br/><small>127.0.0.1:3000</small>"]
+            agents["OpenCode / Hermes"]
+            repos["git repos · ~/src"]
+            webui["Open WebUI · 3000"]
         end
     end
 
-    local["local models<br/><small>qwen3.5:9b default<br/>gemma4:12b second opinion</small>"]
-    cloud["hosted API<br/><small>frontier-scale work<br/>that won't fit locally</small>"]
+    local["local models"]
+    cloud["hosted API"]
 
-    mac -- "ssh ai-dev<br/>+ port forwards" --> sshd
+    mac -- "ssh ai-dev + port forwards" --> sshd
     sshd --> wsl
     gpu --> ollama
     agents --> ollama
