@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# JetBrains IDE
+.idea/
+
+# Demo working files
+demos/
+video/
+
+# Claude Code local settings
+.claude/settings.local.json

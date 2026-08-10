@@ -1,0 +1,41 @@
+# Add these blocks to ~/.ssh/config on the Mac (or any client machine).
+# Replace HostName with the Windows box's LAN IP or Tailscale hostname/IP,
+# and User with the Windows username (check with `whoami` on the Windows side).
+
+Host ai-win
+  HostName REPLACE_WITH_LAN_OR_TAILSCALE_IP
+  User REPLACE_WITH_WINDOWS_USERNAME
+  IdentityFile ~/.ssh/ai_workstation
+  IdentitiesOnly yes
+  ServerAliveInterval 30
+  ServerAliveCountMax 3
+
+# ai-dev drops you straight into the WSL Ubuntu environment and tunnels
+# Ollama + Open WebUI back to the client over the SSH connection.
+Host ai-dev
+  HostName REPLACE_WITH_LAN_OR_TAILSCALE_IP
+  User REPLACE_WITH_WINDOWS_USERNAME
+  IdentityFile ~/.ssh/ai_workstation
+  IdentitiesOnly yes
+  RequestTTY force
+  RemoteCommand wsl.exe -d Ubuntu-24.04 --cd ~
+  LocalForward 11434 127.0.0.1:11434
+  LocalForward 3000 127.0.0.1:3000
+  ServerAliveInterval 30
+  ServerAliveCountMax 3
+
+# ai-ollama is a lightweight, no-shell tunnel: just forwards Ollama's port
+# so you can point a local tool (e.g. a Mac-side app) at 127.0.0.1:11435
+# without opening a WSL session. Use a different local port than ai-dev's
+# forward (11435 here) if you might run both connections at once.
+Host ai-ollama
+  HostName REPLACE_WITH_LAN_OR_TAILSCALE_IP
+  User REPLACE_WITH_WINDOWS_USERNAME
+  IdentityFile ~/.ssh/ai_workstation
+  IdentitiesOnly yes
+
+  LocalForward 11435 127.0.0.1:11434
+  ExitOnForwardFailure yes
+
+  ServerAliveInterval 30
+  ServerAliveCountMax 3
