@@ -1,5 +1,17 @@
 # Architecture
 
+- [Target design](#target-design)
+- [Tools and versions this repo targets](#tools-and-versions-this-repo-targets)
+  - [Platform](#platform)
+  - [WSL toolchain](#wsl-toolchain)
+  - [Services](#services)
+  - [Models and agents](#models-and-agents)
+- [Why one NVIDIA driver, not two](#why-one-nvidia-driver-not-two)
+- [Why SSH tunneling instead of exposing ports](#why-ssh-tunneling-instead-of-exposing-ports)
+- [Taking it on the road: Tailscale](#taking-it-on-the-road-tailscale)
+- [System RAM vs. GPU VRAM](#system-ram-vs-gpu-vram)
+- [Working from the Mac, or working at the box](#working-from-the-mac-or-working-at-the-box)
+
 ## Target design
 
 -   **Windows 11 remains the host.** It owns the NVIDIA driver, runs Ollama natively, and is the one place OpenSSH listens. This gives full RTX GPU support without dual-booting, and keeps Steam compatibility if you ever want it.
