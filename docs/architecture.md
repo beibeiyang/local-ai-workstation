@@ -118,6 +118,15 @@ LocalForward 3000  127.0.0.1:3000    # Open WebUI
 
 `ssh ai-dev` opens the tunnels as a side effect of the shell session you wanted anyway. While it's up, `http://127.0.0.1:11434` and `http://127.0.0.1:3000` on the Mac reach the services on the Windows/WSL box. Close the session and the tunnel is gone with it.
 
+There's a second alias for when you want the Ollama API on the Mac *without* a WSL shell — say, to point a Mac-side app at it. `ai-ollama` forwards **local 11435** to the same remote 11434:
+
+```text
+LocalForward 11435 127.0.0.1:11434   # ai-ollama: note the different local port
+ExitOnForwardFailure yes
+```
+
+The local port differs on purpose. Both aliases target remote 11434, so if `ai-ollama` also used local 11434 it would collide with an already-open `ai-dev` session; with `ExitOnForwardFailure yes` that collision fails the connection loudly instead of silently leaving you with no tunnel. So: `127.0.0.1:11434` on the Mac is Ollama via `ai-dev`, `127.0.0.1:11435` is Ollama via `ai-ollama`, and both are the same service on the other end.
+
 Worth being precise about what "not exposed" means here, because the two services aren't bound the same way:
 
 -   **Open WebUI is genuinely loopback-only.** [`config/docker-compose.yml`](../config/docker-compose.yml) publishes it as `127.0.0.1:3000:8080` — the container port is reachable from the host's loopback interface and nowhere else.
@@ -127,7 +136,7 @@ That LAN reachability is a deliberate trade, and it's the reason the "no auth at
 
 ```mermaid
 flowchart LR
-    subgraph macside["Mac — loopback only"]
+    subgraph macside["Mac — while ssh ai-dev is up"]
         direction TB
         m1["127.0.0.1:11434"]
         m2["127.0.0.1:3000"]
