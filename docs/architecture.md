@@ -66,21 +66,21 @@ Only a few things here are actually pinned; most are installed at whatever versi
 | Component | Version | Pinned? | Where |
 |---|---|---|---|
 | Windows 11 | 11 (any current build) | — | host OS assumption throughout |
-| PowerShell | 5.1+ to *run* the bootstrap | pinned | `#requires -Version 5.1` in [`scripts/bootstrap-windows.ps1`](../scripts/bootstrap-windows.ps1) |
+| [PowerShell](https://learn.microsoft.com/powershell/) | 5.1+ to *run* the bootstrap | pinned | `#requires -Version 5.1` in [`scripts/bootstrap-windows.ps1`](../scripts/bootstrap-windows.ps1) |
 | PowerShell 7 | current | rolling | installed alongside 5.1 via winget `Microsoft.PowerShell` |
-| WSL | 2 | pinned | `wsl --set-default-version 2` |
-| Ubuntu | 24.04 LTS | pinned | distro name `Ubuntu-24.04`, used verbatim in the scripts and in `wsl -d` commands |
-| OpenSSH Server | Windows capability `OpenSSH.Server~~~~0.0.1.0` | pinned | queried and enabled by name, rather than enumerating all capabilities |
-| NVIDIA driver | current Studio Driver | rolling | installed by hand via the NVIDIA App, Windows-side only |
+| [WSL](https://learn.microsoft.com/windows/wsl/) | 2 | pinned | `wsl --set-default-version 2` |
+| [Ubuntu](https://ubuntu.com) | 24.04 LTS | pinned | distro name `Ubuntu-24.04`, used verbatim in the scripts and in `wsl -d` commands |
+| [OpenSSH Server](https://learn.microsoft.com/windows-server/administration/openssh/openssh_overview) | Windows capability `OpenSSH.Server~~~~0.0.1.0` | pinned | queried and enabled by name, rather than enumerating all capabilities |
+| NVIDIA driver | current Studio Driver | rolling | installed by hand via the [NVIDIA App](https://www.nvidia.com/en-us/software/nvidia-app/), Windows-side only |
 
 ### WSL toolchain
 
 | Tool | Version | Pinned? | Where |
 |---|---|---|---|
-| Node.js | 24.x | pinned | `mise use --global node@24` |
-| Python | 3.12.x | pinned | `mise use --global python@3.12` — also Ubuntu 24.04's system `python3` |
-| `mise` | current | rolling | install script from `mise.run` |
-| `uv` | current | rolling | install script from `astral.sh/uv` |
+| [Node.js](https://nodejs.org) | 24.x | pinned | `mise use --global node@24` |
+| [Python](https://www.python.org) | 3.12.x | pinned | `mise use --global python@3.12` — also Ubuntu 24.04's system `python3` |
+| [`mise`](https://mise.jdx.dev) | current | rolling | install script from `mise.run` |
+| [`uv`](https://docs.astral.sh/uv/) | current | rolling | install script from `astral.sh/uv` |
 | CLI tooling | Ubuntu 24.04 repo versions | rolling | `git`, `gh`, `jq`, `ripgrep`, `fd-find`, `fzf`, `tmux`, `htop`, `btop`, `nvtop`, `direnv`, `shellcheck`, `sqlite3`, `socat`, `build-essential` |
 
 Because `mise` pins Node and Python globally, a project that needs something else should override it per-directory (`mise use node@22`) rather than changing the global pins.
@@ -89,10 +89,10 @@ Because `mise` pins Node and Python globally, a project that needs something els
 
 | Service | Version | Pinned? | Notes |
 |---|---|---|---|
-| Ollama | current | rolling | winget `Ollama.Ollama`, running natively on Windows |
-| Open WebUI | `:main` tag | rolling | `ghcr.io/open-webui/open-webui:main` in [`config/docker-compose.yml`](../config/docker-compose.yml) — a moving tag, so `docker compose pull` can change it under you |
-| Docker Compose | v2 syntax | pinned | `docker compose` (no `version:` key in the file); Docker Desktop with the WSL2 engine |
-| Tailscale | current | rolling | winget `Tailscale.Tailscale` on Windows, plus the Mac client |
+| [Ollama](https://ollama.com) | current | rolling | winget `Ollama.Ollama`, running natively on Windows |
+| [Open WebUI](https://openwebui.com) | `:main` tag | rolling | `ghcr.io/open-webui/open-webui:main` in [`config/docker-compose.yml`](../config/docker-compose.yml) — a moving tag, so `docker compose pull` can change it under you |
+| [Docker Compose](https://docs.docker.com/compose/) | v2 syntax | pinned | `docker compose` (no `version:` key in the file); Docker Desktop with the WSL2 engine |
+| [Tailscale](https://tailscale.com) | current | rolling | winget `Tailscale.Tailscale` on Windows, plus the Mac client |
 
 Ollama's runtime settings are set as user environment variables by the Windows bootstrap and are deliberately conservative for 16GB VRAM / 16GB system RAM: `OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_CONTEXT_LENGTH=8192`, `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0`. Raise these after a RAM upgrade, not before.
 
@@ -103,9 +103,9 @@ Ollama's runtime settings are set as user environment variables by the Windows b
 | `qwen3.5:9b` | tag pinned | pinned | default model, pulled by [`scripts/pull-models.sh`](../scripts/pull-models.sh) and referenced in [`config/opencode.json.example`](../config/opencode.json.example) |
 | `gemma4:12b` | tag pinned | pinned | second starter model |
 | `gpt-oss:20b` | tag pinned | opt-in | only with `FULL=1`; see [`models.md`](models.md) |
-| OpenCode | current | rolling | config validated against `https://opencode.ai/config.json`; the Ollama provider goes through the `@ai-sdk/openai-compatible` npm package |
-| Hermes | current | rolling | install script, on by default (`INSTALL_HERMES=1`) |
-| OpenClaw | current | opt-in | not installed unless `INSTALL_OPENCLAW=1` |
+| [OpenCode](https://opencode.ai) | current | rolling | config validated against `https://opencode.ai/config.json`; the Ollama provider goes through the `@ai-sdk/openai-compatible` npm package |
+| [Hermes](https://hermes-agent.nousresearch.com) | current | rolling | install script, on by default (`INSTALL_HERMES=1`) |
+| [OpenClaw](https://openclaw.ai) | current | opt-in | not installed unless `INSTALL_OPENCLAW=1` |
 
 ## Why one NVIDIA driver, not two
 
