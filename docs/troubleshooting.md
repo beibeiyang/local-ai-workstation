@@ -3,6 +3,8 @@
 Two real failures came up running [`scripts/bootstrap-windows.ps1`](../scripts/bootstrap-windows.ps1) on an actual
 Windows 11 machine. Both are fixed in the version of the script in this
 repo; this doc explains what happened and how to recognize it if it recurs.
+For what that script does and when to run it, see
+[`windows-bootstrap.md`](windows-bootstrap.md).
 
 ## WinGet: `Failed when searching source: msstore` / `0x8a15005e`
 

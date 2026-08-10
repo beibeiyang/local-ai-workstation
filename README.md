@@ -1,12 +1,15 @@
 # Local AI Workstation
 
 Turn a Windows gaming PC with an NVIDIA GPU into a local AI development server
-you SSH into from a Mac (or any other machine) — Ollama for local models,
-OpenCode/Hermes for coding agents, and Open WebUI for a browser front end.
+you SSH into from a Mac (or any other machine) —
+[Ollama](https://ollama.com) for running models on your own hardware,
+[OpenCode](https://opencode.ai) and [Hermes](https://hermes-agent.nousresearch.com)
+for coding agents, and [Open WebUI](https://openwebui.com) for a browser front end.
 
 Built and documented on a Ryzen 7 8700F / RTX 5070 Ti 16GB / 16GB DDR5 /
 1TB SSD desktop ([the exact machine](#the-hardware)), but the steps are
-generic to any Windows 11 + WSL2 + NVIDIA GPU machine.
+generic to any Windows 11 + [WSL2](https://learn.microsoft.com/windows/wsl/) +
+NVIDIA GPU machine.
 
 ```mermaid
 flowchart TB
@@ -50,6 +53,45 @@ See [`docs/architecture.md`](docs/architecture.md) for the full breakdown, inclu
 [the tools and versions this repo targets](docs/architecture.md#tools-and-versions-this-repo-targets)
 and which of them are pinned rather than installed at whatever is current.
 
+## Prerequisites
+
+**Hardware**
+
+- A desktop or laptop with an **NVIDIA GPU**. 16GB of VRAM is what this was
+  written against; less works, with smaller models. The GPU driver is installed
+  by hand via the [NVIDIA App](https://www.nvidia.com/en-us/software/nvidia-app/),
+  not by these scripts.
+- Enough **system RAM** to run Windows, WSL2, and Docker at once. 16GB is the
+  tested floor and the first thing worth upgrading.
+- A wired or reliable network connection, and space for models (they're several
+  GB each).
+
+**On the Windows machine**
+
+- **Windows 11**, installed and signed in.
+- **An account with local Administrator rights.** This is the one hard
+  requirement people get stuck on:
+  [`scripts/bootstrap-windows.ps1`](scripts/bootstrap-windows.ps1) enables
+  Windows optional features, creates firewall rules, and configures services,
+  so it checks for elevation and stops without it. Create one in
+  *Settings → Accounts → Other users* if you don't have it. Everything after
+  that step runs as your normal user.
+- **`winget`**, the
+  [Windows Package Manager](https://learn.microsoft.com/windows/package-manager/),
+  which ships with App Installer from the Microsoft Store. The script warns and
+  skips the installs if it's missing.
+
+**On the machine you'll work from**
+
+- A Mac, Linux box, or anything with an **SSH client** — plus a terminal you're
+  comfortable in. Familiarity with SSH keys helps but isn't assumed; the steps
+  below generate one.
+
+Everything else — [Docker Desktop](https://www.docker.com/products/docker-desktop/),
+[Ollama](https://ollama.com), [Tailscale](https://tailscale.com), Git,
+[Ubuntu 24.04](https://ubuntu.com/) under WSL2, and the language toolchains — is
+installed for you by the two bootstrap scripts.
+
 ## Quick start
 
 1. **Read [`docs/security.md`](docs/security.md) first.** It covers what not
@@ -65,7 +107,11 @@ and which of them are pinned rather than installed at whatever is current.
    cd path\to\local-ai-workstation\scripts
    .\bootstrap-windows.ps1 -MacPublicKey 'PASTE_THE_FULL_SSH_PUBLIC_KEY_HERE'
    ```
-   Reboot when it finishes.
+   Reboot when it finishes. This is the one step that needs Administrator, and
+   it's safe to rerun. See
+   [`docs/windows-bootstrap.md`](docs/windows-bootstrap.md) for what it changes,
+   the flags it takes, and the five manual steps it deliberately leaves to you
+   (NVIDIA driver, first Ubuntu launch, and so on).
 4. From Ubuntu/WSL:
    ```bash
    cd /mnt/c/path/to/local-ai-workstation/scripts
@@ -101,7 +147,7 @@ machine.
 |---|---|
 | [`scripts/`](scripts/) | Windows and WSL bootstrap automation, model pulling, verification |
 | [`config/`](config/) | Example configs to copy and edit: OpenCode, SSH, Open WebUI |
-| [`docs/`](docs/) | Architecture, model choices, security posture, troubleshooting |
+| [`docs/`](docs/) | Architecture, Windows bootstrap, model choices, security posture, troubleshooting |
 
 ## The hardware
 
